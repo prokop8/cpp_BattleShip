@@ -26,11 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     battlewindow.cpp \
-    game.cpp
+    game.cpp \
+    player.cpp \
+    ship.cpp
 
 HEADERS  += mainwindow.h \
     battlewindow.h \
-    game.h
+    game.h \
+    player.h \
+    ship.h
 
 FORMS    += mainwindow.ui \
     battlewindow.ui
