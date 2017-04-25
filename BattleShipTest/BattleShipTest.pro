@@ -1,14 +1,17 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-04-21T23:36:55
+# Project created by QtCreator 2017-04-25T23:26:53
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += testlib
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       -= gui
 
-TARGET = BattleShip
+TARGET = tst_battleshiptest
+CONFIG   += console
+CONFIG   -= app_bundle
+
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -23,31 +26,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    battlewindow.cpp \
-    game.cpp \
-    player.cpp \
-    ship.cpp \
-    Controller/game.cpp \
-    Model/main.cpp \
-    Model/player.cpp \
-    Model/ship.cpp \
-    View/battlewindow.cpp \
-    View/mainwindow.cpp
+SOURCES += tst_battleshiptest.cpp \
+    atack.cpp
+DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
-HEADERS  += mainwindow.h \
-    battlewindow.h \
-    game.h \
-    player.h \
-    ship.h \
-    Controller/game.h \
-    Model/player.h \
-    Model/ship.h \
-    View/battlewindow.h \
-    View/mainwindow.h
-
-FORMS    += mainwindow.ui \
-    battlewindow.ui \
-    View/battlewindow.ui \
-    View/mainwindow.ui
+HEADERS += \
+    atack.h

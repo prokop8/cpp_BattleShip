@@ -10,6 +10,8 @@ public:
     ~Player();
 private:
     Ship *playerShips[10];
+    int shipsLeft;
+    int shipsPlaced;
 };
 
 #endif // PLAYER_H
