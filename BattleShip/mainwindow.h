@@ -18,19 +18,20 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_5_clicked();
+    void onStartGame();
 
-    void on_actionAs_Server_triggered();
+    void createServer();
 
-    void on_actionAs_Client_triggered();
+    void createClient();
 
-    void on_actionExit_triggered();
-
+    void exitGame();
+protected:
+    void resizeEvent(QResizeEvent *event) override;
 private:
     Ui::MainWindow *ui;
     BattleWindow *battleWindow;
     Game *game;
-    void DrawLayout();
+    void DrawPlayerBoard();
 };
 
 #endif // MAINWINDOW_H

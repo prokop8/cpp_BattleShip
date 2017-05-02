@@ -12,9 +12,10 @@ class Game : public QObject
 public:
     Game();
     ~Game();
-    QGraphicsScene *scene;
-    //QGraphicsScene *scene2;
-    QGraphicsRectItem *field[10][10];
+    QGraphicsScene *scene1;
+    QGraphicsScene *scene2;
+    QGraphicsRectItem *playerField[10][10];
+    QGraphicsRectItem *opponentField[10][10];
     Player *server;
     Player *client;
 };

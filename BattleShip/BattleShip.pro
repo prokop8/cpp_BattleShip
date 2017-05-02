@@ -28,26 +28,13 @@ SOURCES += main.cpp\
     battlewindow.cpp \
     game.cpp \
     player.cpp \
-    ship.cpp \
-    Controller/game.cpp \
-    Model/main.cpp \
-    Model/player.cpp \
-    Model/ship.cpp \
-    View/battlewindow.cpp \
-    View/mainwindow.cpp
+    ship.cpp
 
 HEADERS  += mainwindow.h \
     battlewindow.h \
     game.h \
     player.h \
-    ship.h \
-    Controller/game.h \
-    Model/player.h \
-    Model/ship.h \
-    View/battlewindow.h \
-    View/mainwindow.h
+    ship.h
 
 FORMS    += mainwindow.ui \
-    battlewindow.ui \
-    View/battlewindow.ui \
-    View/mainwindow.ui
+    battlewindow.ui
