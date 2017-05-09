@@ -16,7 +16,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    bool isCorrect(int firstX, int firstY, int secondX, int secondY);
 
+signals:
+    void successfullyPlaced(int x, int y, int color);
 private slots:
     void onStartGame();
 
@@ -25,6 +28,19 @@ private slots:
     void createClient();
 
     void exitGame();
+
+    void setActiveShip_4();
+
+    void setActiveShip_3();
+
+    void setActiveShip_2();
+
+    void setActiveShip_1();
+
+    void placeShip(int, int);
+
+    void changeCounter(int);
+
 protected:
     void resizeEvent(QResizeEvent *event) override;
 private:

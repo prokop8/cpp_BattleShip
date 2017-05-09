@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QGraphicsRectItem>
 #include "player.h"
+#include "board.h"
 
 class Game : public QObject
 {
@@ -14,8 +15,8 @@ public:
     ~Game();
     QGraphicsScene *scene1;
     QGraphicsScene *scene2;
-    QGraphicsRectItem *playerField[10][10];
-    QGraphicsRectItem *opponentField[10][10];
+    Board *playerField[10][10];
+    Board *opponentField[10][10];
     Player *server;
     Player *client;
 };
