@@ -27,6 +27,7 @@ private slots:
     void attackOpponentField(int first, int second);
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 private:
     Ui::BattleWindow *ui;
     Game *game;

@@ -42,6 +42,13 @@ void BattleWindow::resizeEvent(QResizeEvent *event)
     ui->graphicsView_2->fitInView(ui->graphicsView_2->sceneRect(), Qt::KeepAspectRatio);
 }
 
+void BattleWindow::showEvent(QShowEvent *event)
+{
+    QMainWindow::showEvent(event);
+    ui->graphicsView->fitInView(ui->graphicsView->sceneRect(), Qt::KeepAspectRatio);
+    ui->graphicsView_2->fitInView(ui->graphicsView_2->sceneRect(), Qt::KeepAspectRatio);
+}
+
 void BattleWindow::DrawPlayerBoard()//rysuje pole gracza
 {
     for (int n = 0, x = 0; n < 10; ++n, x += 50)
@@ -205,7 +212,7 @@ void BattleWindow::attackPlayerField()//randomowa funkcja zeby opponent atakowal
                         emit opponentAttack(j*50, i*50, 4);
                     }
                 game->server->decShipsLeft();
-                if(game->client->isGameOver())
+                if(game->server->isGameOver())
                 {
                     QMessageBox::information(
                         this,

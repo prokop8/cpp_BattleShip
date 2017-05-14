@@ -17,7 +17,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     bool isCorrect(int firstX, int firstY, int secondX, int secondY);
-
 signals:
     void successfullyPlaced(int x, int y, int color);
 private slots:
@@ -41,8 +40,11 @@ private slots:
 
     void changeCounter(int);
 
+    void setRandomShips();
+
 protected:
     void resizeEvent(QResizeEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 private:
     Ui::MainWindow *ui;
     BattleWindow *battleWindow;

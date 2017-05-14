@@ -5,20 +5,22 @@
 #include "math.h"
 #include "board.h"
 #include <QDebug>
+#include <time.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    ui->graphicsView->hide();
-    ui->tabWidget->hide();
-    ui->startGameButton->hide();
+    ui->setupUi(this); 
     game = new Game();
-    ui->graphicsView->setSceneRect(0,0,500,500);
     game->scene1=new QGraphicsScene(this);
     ui->graphicsView->setScene(game->scene1);
+    ui->graphicsView->setSceneRect(0,0,500,500);
     DrawPlayerBoard();
+
+    ui->graphicsView->setEnabled(false);
+    ui->tabWidget->setEnabled(false);
+    ui->startGameButton->setEnabled(false);
 
     connect(ui->startGameButton, SIGNAL(clicked(bool)), this, SLOT(onStartGame()));
     connect(ui->actionAs_Server, SIGNAL(triggered(bool)), this, SLOT(createServer()));
@@ -28,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton_2, SIGNAL(clicked(bool)), this, SLOT(setActiveShip_3()));
     connect(ui->pushButton_3, SIGNAL(clicked(bool)), this, SLOT(setActiveShip_2()));
     connect(ui->pushButton_4, SIGNAL(clicked(bool)), this, SLOT(setActiveShip_1()));
+    connect(ui->pushButton_9, SIGNAL(clicked(bool)), this, SLOT(setRandomShips()));
 }
 
 MainWindow::~MainWindow()
@@ -38,6 +41,12 @@ MainWindow::~MainWindow()
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QMainWindow::resizeEvent(event);
+    ui->graphicsView->fitInView(ui->graphicsView->sceneRect(), Qt::KeepAspectRatio);
+}
+
+void MainWindow::showEvent(QShowEvent *event)
+{
+    QMainWindow::showEvent(event);
     ui->graphicsView->fitInView(ui->graphicsView->sceneRect(), Qt::KeepAspectRatio);
 }
 
@@ -59,7 +68,6 @@ void MainWindow::DrawPlayerBoard()
 void MainWindow::onStartGame()
 {
     battleWindow = new BattleWindow(this, this->game);
-    //battleWindow->setData(this->game);
     battleWindow->show();
     hide();
 }
@@ -67,9 +75,9 @@ void MainWindow::onStartGame()
 void MainWindow::createServer()
 {
     this->setWindowTitle("Server");
-    ui->graphicsView->show();
-    ui->tabWidget->show();
-    ui->startGameButton->show();
+    ui->graphicsView->setEnabled(true);
+    ui->tabWidget->setEnabled(true);
+    ui->startGameButton->setEnabled(true);
     ui->actionAs_Client->setEnabled(false);
     ui->actionAs_Server->setEnabled(false);
     ui->startGameButton->setEnabled(false);
@@ -78,9 +86,9 @@ void MainWindow::createServer()
 void MainWindow::createClient()
 {
     this->setWindowTitle("Client");
-    ui->graphicsView->show();
-    ui->tabWidget->show();
-    ui->startGameButton->show();
+    ui->graphicsView->setEnabled(true);
+    ui->tabWidget->setEnabled(true);
+    ui->startGameButton->setEnabled(true);
     ui->actionAs_Client->setEnabled(false);
     ui->actionAs_Server->setEnabled(false);
     ui->startGameButton->setEnabled(false);
@@ -287,5 +295,101 @@ void MainWindow::changeCounter(int color)
             str = QString::number(tmp);
             ui->label_8->setText(str);
         }
+    }
+}
+
+void MainWindow::setRandomShips()
+{
+    for(int i=0;i<10;i++)
+        for(int j=0;j<10;j++)
+            emit successfullyPlaced(i*50,j*50,0);
+    delete game->server;
+    game->server = new Player();
+    ui->label_5->setText(QString::number(1));
+    ui->label_6->setText(QString::number(2));
+    ui->label_7->setText(QString::number(3));
+    ui->label_8->setText(QString::number(4));
+
+    srand ( time(NULL) );
+    int size = 0;
+    int x_1 = 0;
+    int y_1 = 0;
+    int x_2 = 0;
+    int y_2 = 0;
+    int dir = 0;
+    bool check;
+    for(int i = 0; i<10; i++)
+    {
+        game->server->setActiveShip(game->server->getPlayerShip(i));
+        check = false;
+        while(!check)
+        {
+            size = game->server->getPlayerShip(i)->getSize();
+            x_1 = rand() % 10;
+            y_1 = rand() % 10;
+            dir = rand() % 2;
+            if(dir == 0)//horiz
+            {
+                x_2 = x_1+size-1;
+                y_2 = y_1;
+            }
+            else//vert
+            {
+                y_2 = y_1+size-1;
+                x_2 = x_1;
+            }
+            if(x_2>9 || y_2>9 || y_1<0 || x_1<0)
+                check = false;
+            else
+                check = isCorrect(x_1, y_1, x_2, y_2);
+        }
+        if(dir == 0)
+        {
+            game->server->setIsPlacingShip(true);
+            game->server->incShipsPlaced();
+            for(int j = 0;j<size;j++)
+            {
+                emit successfullyPlaced((x_1+j)*50, y_1*50, 1);
+                game->server->setIsPlacingShip(false);
+                game->server->getPlayerShip(i)->setIsPlaced(true);
+                game->server->getPlayerShip(i)->setXBegin(x_1);
+                game->server->getPlayerShip(i)->setYBegin(y_1);
+                game->server->getPlayerShip(i)->setXEnd(x_2);
+                game->server->getPlayerShip(i)->setYEnd(y_2);
+                game->server->getShipPlacement(x_1+j, y_1)->setSize(game->server->getPlayerShip(i)->getSize());
+                game->server->getShipPlacement(x_1+j, y_1)->setHealth(game->server->getPlayerShip(i)->getHealth());
+                game->server->getShipPlacement(x_1+j, y_1)->setIsPlaced(game->server->getPlayerShip(i)->getIsPlaced());
+                game->server->getShipPlacement(x_1+j, y_1)->setXBegin(x_1);
+                game->server->getShipPlacement(x_1+j, y_1)->setYBegin(y_1);
+                game->server->getShipPlacement(x_1+j, y_1)->setXEnd(x_2);
+                game->server->getShipPlacement(x_1+j, y_1)->setYEnd(y_2);
+            }
+        }
+        else
+        {
+            game->server->setIsPlacingShip(true);
+            game->server->incShipsPlaced();
+            for(int j = 0;j<size;j++)
+            {
+                emit successfullyPlaced(x_1*50, (y_1+j)*50, 1);
+                game->server->setIsPlacingShip(false);
+                game->server->getPlayerShip(i)->setIsPlaced(true);
+                game->server->getPlayerShip(i)->setXBegin(x_1);
+                game->server->getPlayerShip(i)->setYBegin(y_1);
+                game->server->getPlayerShip(i)->setXEnd(x_2);
+                game->server->getPlayerShip(i)->setYEnd(y_2);
+                game->server->getShipPlacement(x_1, y_1+j)->setSize(game->server->getPlayerShip(i)->getSize());
+                game->server->getShipPlacement(x_1, y_1+j)->setHealth(game->server->getPlayerShip(i)->getHealth());
+                game->server->getShipPlacement(x_1, y_1+j)->setIsPlaced(game->server->getPlayerShip(i)->getIsPlaced());
+                game->server->getShipPlacement(x_1, y_1+j)->setXBegin(x_1);
+                game->server->getShipPlacement(x_1, y_1+j)->setYBegin(y_1);
+                game->server->getShipPlacement(x_1, y_1+j)->setXEnd(x_2);
+                game->server->getShipPlacement(x_1, y_1+j)->setYEnd(y_2);
+            }
+        }
+    }
+    if(game->server->getShipsPlaced()==10)
+    {
+        ui->startGameButton->setEnabled(true);
     }
 }
