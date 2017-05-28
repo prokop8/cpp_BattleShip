@@ -42,6 +42,10 @@ private slots:
 
     void setRandomShips();
 
+    void changeActiveShipColor(int);
+
+    void setBomb(int, int);
+
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void showEvent(QShowEvent *event) override;

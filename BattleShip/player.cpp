@@ -5,6 +5,10 @@ Player::Player()
     shipsPlaced=0;
     shipsLeft=10;
     isPlacingShip=false;
+    playerBomb[0]=new Bomb();
+    playerBomb[1]=new Bomb();
+    playerBomb[2]=new Bomb();
+    playerBomb[3]=new Bomb();
     playerShips[0] = new Ship(4);
     playerShips[1] = new Ship(3);
     playerShips[2] = new Ship(3);
@@ -30,6 +34,11 @@ Player::~Player()
 void Player::setActiveShip(Ship *ship)
 {
     this->activeShip=ship;
+    for(int i=0;i<10;i++)
+    {
+        if(playerShips[i]->getSize()==ship->getSize() && !playerShips[i]->getIsPlaced())
+            emit changedActiveShip(ship->getSize());
+    }
 }
 
 Ship* Player::getShipPlacement(int x, int y)
@@ -123,4 +132,9 @@ bool Player::isGameOver()
         return true;
     else
         return false;
+}
+
+Bomb* Player::getPlayerBomb(int number)
+{
+    return playerBomb[number];
 }

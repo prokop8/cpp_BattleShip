@@ -76,9 +76,67 @@ void BattleWindow::DrawOpponentBoard()//rysuje pole komputera
             connect(this, SIGNAL(completedAttack(int,int,int)), game->opponentField[n][m], SLOT(changeColor(int,int,int)));
             connect(this, SIGNAL(opponentAttack(int,int,int)), game->playerField[n][m], SLOT(changeColor(int,int,int)));
 
+
             /*connect(this, SIGNAL(opponentShipHere(int,int,int)), game->opponentField[n][m], SLOT(changeColor(int,int,int)));
             if(game->client->getShipPlacement(n, m)->getIsPlaced())
                 emit opponentShipHere(x, y, 2);*/
+        }
+    }
+    for(int i=0;i<4;i++)
+    {
+        int firstX=0;
+        int firstY=0;
+        int secondX=0;
+        int secondY=0;
+        int x_1=0;
+        int y_1=0;
+        int x_2=0;
+        int y_2=0;
+        int number=0;
+        int x;
+        int y;
+        if(game->server->getPlayerBomb(i)->getIsPlaced())
+        {
+            x=game->server->getPlayerBomb(i)->getX();
+            y=game->server->getPlayerBomb(i)->getY();
+            if(game->client->getShipPlacement(x, y)->getSize()!=-1)
+            {
+                firstX=game->client->getShipPlacement(x, y)->getXBegin();
+                firstY=game->client->getShipPlacement(x, y)->getYBegin();
+                secondX=game->client->getShipPlacement(x, y)->getXEnd();
+                secondY=game->client->getShipPlacement(x, y)->getYEnd();
+
+                for(int i = 0; i<10; i++)
+                {
+                    if(game->client->getPlayerShip(i)->getXBegin() == firstX && game->client->getPlayerShip(i)->getYBegin() == firstY &&
+                            game->client->getPlayerShip(i)->getXEnd() == secondX && game->client->getPlayerShip(i)->getYEnd() == secondY)
+                    {
+                        number = i;
+                        break;
+                    }
+                }
+                game->client->getPlayerShip(number)->dealDamage();
+                emit completedAttack(x*50, y*50, 3);
+                if(game->client->getPlayerShip(number)->getHealth() == 0)
+                {
+                    x_1=(firstX<=secondX)?firstX-1:secondX-1;
+                    y_1=(firstY<=secondY)?firstY-1:secondY-1;
+                    x_2=(firstX<=secondX)?secondX+1:firstX+1;
+                    y_2=(firstY<=secondY)?secondY+1:firstY+1;
+                    for(int i = y_1; i<y_2+1;i++)
+                        for(int j = x_1; j<x_2+1;j++)
+                        {
+                            if(i>9 || j>9 || i<0 || j<0 || game->client->getShipPlacement(j, i)->getSize()!=-1)
+                                continue;
+                            emit completedAttack(j*50, i*50, 4);
+                        }
+                    game->client->decShipsLeft();
+                }
+            }
+            else
+            {
+                emit completedAttack(x*50, y*50, 4);
+            }
         }
     }
 }

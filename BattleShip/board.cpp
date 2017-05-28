@@ -65,11 +65,11 @@ void Board::changeColor(int x, int y, int color)
     {
         if(color!=0)
         {
-            setEnabled(false);
+            //setEnabled(false);
             emit changeNumberOfShips(color);
         }
-        else
-            setEnabled(true);
+        /*else
+            setEnabled(true);*/
         this->color = color;
         update();
     }

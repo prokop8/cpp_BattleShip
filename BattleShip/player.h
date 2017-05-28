@@ -2,9 +2,12 @@
 #define PLAYER_H
 
 #include "ship.h"
+#include <QObject>
+#include "bomb.h"
 
-class Player
+class Player: public QObject
 {
+    Q_OBJECT
 public:
     Player();
     ~Player();
@@ -13,6 +16,7 @@ public:
     Ship* getActiveShip();
     Ship* getShipPlacement(int x, int y);
     Ship* getPlayerShip(int number);
+    Bomb* getPlayerBomb(int number);
     bool getIsPlacingShip();
     int getBeginX();
     int getBeginY();
@@ -28,8 +32,11 @@ public:
     void setHits(bool, int, int);
     bool getHits(int, int);
     bool isGameOver();
+signals:
+    void changedActiveShip(int);
 private:
     Ship *playerShips[10];
+    Bomb *playerBomb[4];
     bool hits[10][10] = {0};
     Ship *shipPlacement[10][10];
     int shipsLeft;

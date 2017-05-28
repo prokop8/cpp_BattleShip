@@ -29,14 +29,16 @@ SOURCES += main.cpp\
     game.cpp \
     player.cpp \
     ship.cpp \
-    board.cpp
+    board.cpp \
+    bomb.cpp
 
 HEADERS  += mainwindow.h \
     battlewindow.h \
     game.h \
     player.h \
     ship.h \
-    board.h
+    board.h \
+    bomb.h
 
 FORMS    += mainwindow.ui \
     battlewindow.ui

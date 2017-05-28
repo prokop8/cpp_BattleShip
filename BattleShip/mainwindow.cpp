@@ -5,6 +5,7 @@
 #include "math.h"
 #include "board.h"
 #include <QDebug>
+#include <QMessageBox>
 #include <time.h>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -22,6 +23,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabWidget->setEnabled(false);
     ui->startGameButton->setEnabled(false);
 
+
+    QPixmap ship4("D:/Qtworkplace/cpp_BattleShip/cpp_BattleShip/BattleShip/4.png");
+    QPixmap ship3("D:/Qtworkplace/cpp_BattleShip/cpp_BattleShip/BattleShip/3.png");
+    QPixmap ship2("D:/Qtworkplace/cpp_BattleShip/cpp_BattleShip/BattleShip/2.png");
+    QPixmap ship1("D:/Qtworkplace/cpp_BattleShip/cpp_BattleShip/BattleShip/1.png");
+    QPixmap bomb("D:/Qtworkplace/cpp_BattleShip/cpp_BattleShip/BattleShip/bomb.png");
+    ui->picture_4->setPixmap(ship4);
+    ui->picture_3->setPixmap(ship3);
+    ui->picture_2->setPixmap(ship2);
+    ui->picture_1->setPixmap(ship1);
+    ui->picture_bomb->setPixmap(bomb);
+
     connect(ui->startGameButton, SIGNAL(clicked(bool)), this, SLOT(onStartGame()));
     connect(ui->actionAs_Server, SIGNAL(triggered(bool)), this, SLOT(createServer()));
     connect(ui->actionAs_Client, SIGNAL(triggered(bool)), this, SLOT(createClient()));
@@ -31,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton_3, SIGNAL(clicked(bool)), this, SLOT(setActiveShip_2()));
     connect(ui->pushButton_4, SIGNAL(clicked(bool)), this, SLOT(setActiveShip_1()));
     connect(ui->pushButton_9, SIGNAL(clicked(bool)), this, SLOT(setRandomShips()));
+    connect(game->server, SIGNAL(changedActiveShip(int)), this, SLOT(changeActiveShipColor(int)));
 }
 
 MainWindow::~MainWindow()
@@ -81,6 +95,8 @@ void MainWindow::createServer()
     ui->actionAs_Client->setEnabled(false);
     ui->actionAs_Server->setEnabled(false);
     ui->startGameButton->setEnabled(false);
+    ui->pushButton->setStyleSheet("background-color: yellow");
+
 }
 
 void MainWindow::createClient()
@@ -92,11 +108,28 @@ void MainWindow::createClient()
     ui->actionAs_Client->setEnabled(false);
     ui->actionAs_Server->setEnabled(false);
     ui->startGameButton->setEnabled(false);
+    ui->pushButton->setStyleSheet("background-color: yellow");
 }
 
 void MainWindow::exitGame()
 {
     QApplication::quit();
+}
+
+void MainWindow::changeActiveShipColor(int number)
+{
+    ui->pushButton->setStyleSheet("");
+    ui->pushButton_2->setStyleSheet("");
+    ui->pushButton_3->setStyleSheet("");
+    ui->pushButton_4->setStyleSheet("");
+    if(number == 4)
+        ui->pushButton->setStyleSheet("background-color: yellow");
+    else if(number == 3)
+        ui->pushButton_2->setStyleSheet("background-color: yellow");
+    else if(number == 2)
+        ui->pushButton_3->setStyleSheet("background-color: yellow");
+    else
+        ui->pushButton_4->setStyleSheet("background-color: yellow");
 }
 
 void MainWindow::setActiveShip_4()
@@ -240,6 +273,22 @@ void MainWindow::placeShip(int first, int second)
         if(game->server->getShipsPlaced()==10)
         {
             ui->startGameButton->setEnabled(true);
+            QMessageBox::information(
+                this,
+                tr("Info"),
+                tr("Now you can place bombs or start a game") );
+            for (int n = 0, x = 0; n < 10; ++n, x += 50)
+            {
+                for (int m = 0, y = 0; m < 10; ++m, y += 50)
+                {
+                    disconnect(game->playerField[n][m], SIGNAL(Clicked(int,int)), 0, 0);
+                    connect(game->playerField[n][m], SIGNAL(Clicked(int,int)), this, SLOT(setBomb(int, int)));
+                }
+            }
+            ui->pushButton->setStyleSheet("");
+            ui->pushButton_2->setStyleSheet("");
+            ui->pushButton_3->setStyleSheet("");
+            ui->pushButton_4->setStyleSheet("");
         }
         for(int i = 0; i < 10; i++)
         {
@@ -295,6 +344,14 @@ void MainWindow::changeCounter(int color)
             str = QString::number(tmp);
             ui->label_8->setText(str);
         }
+    }
+    else if(color==3)
+    {
+        str = ui->label_10->text();
+        tmp = str.toInt();
+        tmp--;
+        str = QString::number(tmp);
+        ui->label_10->setText(str);
     }
 }
 
@@ -391,5 +448,42 @@ void MainWindow::setRandomShips()
     if(game->server->getShipsPlaced()==10)
     {
         ui->startGameButton->setEnabled(true);
+        QMessageBox::information(
+            this,
+            tr("Info"),
+            tr("Now you can place bombs or start a game") );
+        ui->pushButton->setStyleSheet("");
+        ui->pushButton_2->setStyleSheet("");
+        ui->pushButton_3->setStyleSheet("");
+        ui->pushButton_4->setStyleSheet("");
+        for (int n = 0, x = 0; n < 10; ++n, x += 50)
+        {
+            for (int m = 0, y = 0; m < 10; ++m, y += 50)
+            {
+                disconnect(game->playerField[n][m], SIGNAL(Clicked(int,int)), 0, 0);
+                connect(game->playerField[n][m], SIGNAL(Clicked(int,int)), this, SLOT(setBomb(int, int)));
+            }
+        }
+    }
+}
+
+void MainWindow::setBomb(int x, int y)
+{
+    bool check=false;
+    int i;
+    for(i=0;i<4;i++)
+    {
+        if(!game->server->getPlayerBomb(i)->getIsPlaced())
+        {
+            check=true;
+            break;
+        }
+    }
+    if(check)
+    {
+        game->server->getPlayerBomb(i)->setIsPlaced(true);
+        game->server->getPlayerBomb(i)->setX(x/50);
+        game->server->getPlayerBomb(i)->setY(y/50);
+        successfullyPlaced(x, y, 3);
     }
 }
